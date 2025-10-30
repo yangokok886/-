@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>字体配置</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f0f2f5;
+            padding: 15px;
+        }
+        
+        .wrapper {
+            max-width: 540px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        .top-bar {
+            background: linear-gradient(to right, #667eea, #764ba2);
+            color: white;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .top-bar h1 {
+            font-size: 19px;
+            font-weight: 500;
+        }
+        
+        .top-link {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            background: rgba(255,255,255,0.15);
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+        
+        .section {
+            padding: 18px 20px;
+        }
+        
+        .section-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f0f2f5;
+        }
+        
+        .field {
+            margin-bottom: 16px;
+        }
+        
+        .label {
+            display: block;
+            font-size: 13px;
+            color: #606060;
+            margin-bottom: 6px;
+        }
+        
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fafbfc;
+            transition: all 0.2s;
+        }
+        
+        select {
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        select option {
+            padding: 8px;
+            font-size: 14px;
+        }
+        
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+        
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 11px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-blue {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-orange {
+            background: #ff9500;
+            color: white;
+        }
+        
+        .btn-green {
+            background: #34c759;
+            color: white;
+            width: 100%;
+        }
+        
+        .preview {
+            background: #fafbfc;
+            border: 2px dashed #e1e4e8;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .preview img {
+            max-width: 100%;
+            max-height: 350px;
+        }
+        
+        .loading {
+            color: #999;
+            font-size: 13px;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #f3f3f3;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .slider-box {
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .slider-val {
+            color: #667eea;
+            font-weight: 500;
+            font-size: 13px;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #e1e4e8;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .check-box {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+        }
+        
+        .check-box input {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        
+        .check-box label {
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+        }
+        
+        .color-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        input[type="color"] {
+            width: 48px;
+            height: 48px;
+            border: 2px solid #e1e4e8;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .color-text {
+            flex: 1;
+            padding: 11px 14px;
+            background: #fafbfc;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 13px;
+            text-align: center;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 13px;
+            background: #fafbfc;
+            transition: all 0.2s;
+        }
+        
+        .tab input {
+            display: none;
+        }
+        
+        .tab:has(input:checked) {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(26,26,26,0.9);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 9999;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .toast.show {
+            display: block;
+            animation: fadeIn 0.2s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -10px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+        
+          .preview {
+              text-align: center;
+              padding: 20px;
+              overflow: auto;
+          }
+          
+          .preview img {
+              max-width: 100%;
+              height: auto;
+              border-radius: 8px;
+              box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          }
+          
+          @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .top-bar {
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+            }
+            
+            .top-link {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="toast" id="toast"></div>
+    
+    <div class="wrapper">
+        <!-- 头部 -->
+        <div class="card">
+            <div class="top-bar">
+                <h1>字体配置</h1>
+                <a href="upload.html" target="_blank" class="top-link">上传字体</a>
+            </div>
+        </div>
+        
+        <!-- 账号 -->
+        <div class="card">
+            <div class="section">
+                <div class="section-title">账号设置</div>
+                <div class="field">
+                    <input type="text" id="wxid" placeholder="输入你的 WXID">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-blue" onclick="loadConfig()">获取配置</button>
+                    <button class="btn btn-orange" onclick="authorize()">授权</button>
+                </div>
+                </div>
+            </div>
+
+        <!-- 预览 -->
+        <div class="card">
+            <div class="section">
+                <div class="section-title">实时预览</div>
+                <div class="preview">
+                    <div class="loading" id="loading">
+                        <span class="spinner"></span> 加载中
+                    </div>
+                    <img id="preview" style="display:none;">
+                </div>
+            </div>
+        </div>
+        
+        <!-- 字体 -->
+        <div class="card">
+            <div class="section">
+                <div class="section-title">字体</div>
+                
+                <div class="field">
+                    <label class="label">字体文件</label>
+                    <select id="font" onchange="update()">
+                        <option>加载中...</option>
+                        </select>
+                    </div>
+                
+                <div class="field">
+                    <div class="slider-box">
+                        <label class="label" style="margin:0;">字号</label>
+                        <span class="slider-val" id="sizeText">32px</span>
+                    </div>
+                    <input type="range" id="size" min="12" max="72" value="32" oninput="updateSize(this.value)">
+                </div>
+                
+                <div class="field">
+                    <div class="slider-box">
+                        <label class="label" style="margin:0;">水平位置 X</label>
+                        <span class="slider-val" id="posXText">50%</span>
+                    </div>
+                    <input type="range" id="posX" min="0" max="100" value="50" oninput="updatePosX(this.value)">
+                </div>
+                
+                <div class="field">
+                    <div class="slider-box">
+                        <label class="label" style="margin:0;">垂直位置 Y</label>
+                        <span class="slider-val" id="posYText">50%</span>
+                    </div>
+                    <input type="range" id="posY" min="0" max="100" value="50" oninput="updatePosY(this.value)">
+                </div>
+                
+                <div class="field">
+                    <button onclick="centerPosition()" style="padding:8px 16px;background:#4CAF50;color:white;border:none;border-radius:4px;cursor:pointer;">居中</button>
+                </div>
+                
+                <div class="field">
+                    <div class="slider-box">
+                        <label class="label" style="margin:0;">字体粗细</label>
+                        <span class="slider-val" id="weightText">正常</span>
+                    </div>
+                    <input type="range" id="fontWeight" min="0" max="10" value="0" oninput="updateWeight(this.value)">
+                </div>
+            </div>
+        </div>
+        
+        <!-- 颜色 -->
+        <div class="card">
+            <div class="section">
+                <div class="section-title">颜色</div>
+                
+                <div class="field">
+                    <label class="label">文字颜色</label>
+                    <div class="color-row">
+                        <input type="color" id="textColor" value="#000000" onchange="update()">
+                        <div class="color-text" id="textColorCode">#000000</div>
+                    </div>
+                </div>
+                
+                <div class="check-box">
+                    <input type="checkbox" id="random" onchange="update()">
+                    <label for="random">随机颜色</label>
+                </div>
+                
+                <div class="check-box">
+                    <input type="checkbox" id="autoSize" onchange="update()">
+                    <label for="autoSize">自动字号</label>
+                    <span style="font-size:12px;color:#999;margin-left:8px;">(生成1024×1024大图)</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 背景 -->
+        <div class="card">
+            <div class="section">
+                <div class="section-title">背景</div>
+                
+                <div class="field">
+                    <label class="label">类型</label>
+                    <div class="tabs">
+                        <label class="tab">
+                            <input type="radio" name="bg" value="color" checked onchange="changeBg()">
+                            <span>纯色</span>
+                        </label>
+                        <label class="tab">
+                            <input type="radio" name="bg" value="transparent" onchange="changeBg()">
+                            <span>透明</span>
+                        </label>
+                        <label class="tab">
+                            <input type="radio" name="bg" value="image" onchange="changeBg()">
+                            <span>图片</span>
+                    </label>
+                    </div>
+                </div>
+                
+                <div class="field" id="bgColorBox">
+                    <label class="label">背景颜色</label>
+                    <div class="color-row">
+                        <input type="color" id="bgColor" value="#FFFFFF" onchange="update()">
+                        <div class="color-text" id="bgColorCode">#FFFFFF</div>
+                            </div>
+                                </div>
+                
+                <div class="field" id="bgImageBox" style="display:none;">
+                    <label class="label">图片缩放</label>
+                    <select id="bgImageSize" onchange="update()">
+                        <option value="cover">填充</option>
+                        <option value="contain">适应</option>
+                        <option value="stretch">拉伸</option>
+                        <option value="tile">平铺</option>
+                    </select>
+                                </div>
+                            </div>
+                        </div>
+        
+        <!-- 特效 -->
+        <div class="card">
+            <div class="section">
+                <div class="section-title">特效</div>
+                
+                <div class="field">
+                    <label class="label">文字特效</label>
+                    <select id="effect" onchange="update()">
+                        <option value="none">无</option>
+                            <option value="shadow">阴影</option>
+                            <option value="outline">描边</option>
+                            <option value="glow">发光</option>
+                        </select>
+                    </div>
+                
+                <div class="check-box">
+                    <input type="checkbox" id="thumb" onchange="update()">
+                    <label for="thumb">缩略图模式</label>
+            </div>
+
+                <div class="check-box">
+                    <input type="checkbox" id="force" onchange="update()">
+                    <label for="force">强制字体大小</label>
+                </div>
+                    </div>
+                </div>
+        
+        <!-- 保存 -->
+        <div class="card">
+            <div class="section">
+                <button class="btn btn-green" onclick="save()">保存配置</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let timer;
+        
+        function show(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 2000);
+        }
+        
+        function updateSize(v) {
+            document.getElementById('sizeText').textContent = v + 'px';
+            update();
+        }
+        
+        function updatePosX(v) {
+            document.getElementById('posXText').textContent = v + '%';
+            update();
+        }
+        
+        function updatePosY(v) {
+            document.getElementById('posYText').textContent = v + '%';
+            update();
+        }
+        
+        function updateWeight(v) {
+            const text = v == 0 ? '正常' : (v <= 3 ? '细' : (v <= 6 ? '中粗' : '很粗'));
+            document.getElementById('weightText').textContent = text;
+            update();
+        }
+        
+        function centerPosition() {
+            document.getElementById('posX').value = 50;
+            document.getElementById('posXText').textContent = '50%';
+            document.getElementById('posY').value = 50;
+            document.getElementById('posYText').textContent = '50%';
+            update();
+            showToast('已居中');
+        }
+        
+        function changeBg() {
+            const type = document.querySelector('input[name="bg"]:checked').value;
+            document.getElementById('bgColorBox').style.display = type === 'color' ? 'block' : 'none';
+            document.getElementById('bgImageBox').style.display = type === 'image' ? 'block' : 'none';
+            update();
+        }
+        
+        document.getElementById('textColor').oninput = e => {
+            document.getElementById('textColorCode').textContent = e.target.value;
+        };
+        
+        document.getElementById('bgColor').oninput = e => {
+            document.getElementById('bgColorCode').textContent = e.target.value;
+        };
+        
+        function update() {
+            if (!document.getElementById('font').value) return;
+            clearTimeout(timer);
+            timer = setTimeout(render, 300);
+        }
+        
+        async function render() {
+            const font = document.getElementById('font').value;
+            if (!font) return;
+            
+            const load = document.getElementById('loading');
+            const img = document.getElementById('preview');
+            
+            load.style.display = 'block';
+            img.style.display = 'none';
+            
+            const bgType = document.querySelector('input[name="bg"]:checked').value;
+            let bgcolor = bgType === 'transparent' ? 'transparent' : 
+                         bgType === 'image' ? 'image' : 
+                         document.getElementById('bgColor').value;
+            
+            const params = new URLSearchParams({
+                font: font,
+                text: '预览文字',
+                size: document.getElementById('size').value,
+                weight: document.getElementById('fontWeight').value,
+                posX: document.getElementById('posX').value,
+                posY: document.getElementById('posY').value,
+                color: document.getElementById('textColor').value,
+                bgcolor: bgcolor,
+                bgsize: document.getElementById('bgImageSize').value,
+                effect: document.getElementById('effect').value,
+                random: document.getElementById('random').checked,
+                autoSize: document.getElementById('autoSize').checked
+            });
+            
+            try {
+                const r = await fetch(`./index.php?ac=subset&${params}`);
+                const d = await r.json();
+                
+                if (d.code === 1) {
+                    img.src = './' + d.data.url + '?_=' + Date.now();
+                    img.onload = () => {
+                        load.style.display = 'none';
+                        img.style.display = 'block';
+                    };
+                } else {
+                    show('预览失败: ' + d.msg);
+                    load.style.display = 'none';
+                }
+            } catch {
+                show('预览失败');
+                load.style.display = 'none';
+            }
+        }
+        
+        async function loadFonts() {
+            try {
+                const r = await fetch('./index.php?ac=fonts');
+                const d = await r.json();
+                
+                if (d.code === 1 && d.data.length) {
+                    const s = document.getElementById('font');
+                    s.innerHTML = '';
+                    
+                    d.data.sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'));
+                    d.data.forEach(f => {
+                        const o = document.createElement('option');
+                        o.value = f.file;
+                        o.textContent = f.name;
+                        s.appendChild(o);
+                    });
+                    
+                    update();
+                }
+            } catch {
+                show('加载字体失败');
+            }
+        }
+        
+        async function authorize() {
+            const id = document.getElementById('wxid').value.trim();
+            if (!id) return show('请输入WXID');
+            if (id.length > 30) return show('WXID过长');
+            
+            try {
+                const r = await fetch('./index.php?ac=authorize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ wxid: id })
+                });
+                const d = await r.json();
+                show(d.msg);
+            } catch {
+                show('授权失败');
+            }
+        }
+        
+        async function loadConfig() {
+            const id = document.getElementById('wxid').value.trim();
+            if (!id) return show('请输入WXID');
+            
+            try {
+                const r = await fetch(`./index.php?ac=config&id=${id}`);
+                const d = await r.json();
+                
+                if (d.code === 1 && d.data?.styles?.[0]) {
+                    const c = d.data.styles[0];
+                    
+                    document.getElementById('font').value = c.font_family || '';
+                    document.getElementById('size').value = c.font_size || 32;
+                    document.getElementById('sizeText').textContent = (c.font_size || 32) + 'px';
+                    
+                    const weight = c.font_weight || 0;
+                    document.getElementById('fontWeight').value = weight;
+                    const weightText = weight == 0 ? '正常' : (weight <= 3 ? '细' : (weight <= 6 ? '中粗' : '很粗'));
+                    document.getElementById('weightText').textContent = weightText;
+                    
+                    document.getElementById('posX').value = c.pos_x || 50;
+                    document.getElementById('posXText').textContent = (c.pos_x || 50) + '%';
+                    document.getElementById('posY').value = c.pos_y || 50;
+                    document.getElementById('posYText').textContent = (c.pos_y || 50) + '%';
+                    
+                    document.getElementById('random').checked = c.random_color || false;
+                    document.getElementById('autoSize').checked = c.auto_size || false;
+                    document.getElementById('effect').value = c.effect || 'none';
+                    document.getElementById('textColor').value = c.font_color || '#000000';
+                    document.getElementById('textColorCode').textContent = c.font_color || '#000000';
+                    
+                    let bg = 'color';
+                    if (c.bg_color === 'transparent') bg = 'transparent';
+                    else if (c.bg_color === 'image') bg = 'image';
+                    document.querySelector(`input[name="bg"][value="${bg}"]`).checked = true;
+                    
+                    if (bg === 'color') {
+                        document.getElementById('bgColor').value = c.bg_color || '#FFFFFF';
+                        document.getElementById('bgColorCode').textContent = c.bg_color || '#FFFFFF';
+                    }
+                    
+                    document.getElementById('thumb').checked = c.thumbnail_mode || false;
+                    document.getElementById('force').checked = c.force_size || false;
+                    
+                    if (c.bg_image_size) {
+                        document.getElementById('bgImageSize').value = c.bg_image_size;
+                    }
+                    
+                    changeBg();
+                    update();
+                    show('加载成功');
+                } else {
+                    show('未找到配置');
+                }
+            } catch {
+                show('加载失败');
+            }
+        }
+        
+        async function save() {
+            const id = document.getElementById('wxid').value.trim();
+            if (!id) return show('请输入WXID');
+            
+            const bgType = document.querySelector('input[name="bg"]:checked').value;
+            const bgcolor = bgType === 'transparent' ? 'transparent' : 
+                           bgType === 'image' ? 'image' : 
+                           document.getElementById('bgColor').value;
+            
+            const cfg = {
+                id: id,
+                styles: [{
+                    font_family: document.getElementById('font').value,
+                    font_size: parseInt(document.getElementById('size').value),
+                    font_weight: parseInt(document.getElementById('fontWeight').value),
+                    pos_x: parseInt(document.getElementById('posX').value),
+                    pos_y: parseInt(document.getElementById('posY').value),
+                    random_color: document.getElementById('random').checked,
+                    auto_size: document.getElementById('autoSize').checked,
+                    effect: document.getElementById('effect').value,
+                    font_color: document.getElementById('textColor').value,
+                    bg_color: bgcolor,
+                    bg_image_size: document.getElementById('bgImageSize').value,
+                    thumbnail_mode: document.getElementById('thumb').checked,
+                    force_size: document.getElementById('force').checked
+                }]
+            };
+            
+            try {
+                const r = await fetch('./index.php?ac=config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(cfg)
+                });
+                const d = await r.json();
+                show(d.msg);
+            } catch {
+                show('保存失败');
+            }
+        }
+        
+        loadFonts();
+    </script>
+</body>
+</html> 

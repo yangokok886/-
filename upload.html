@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上传字体</title>
+    <link href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .upload-area {
+            border: 2px dashed #cbd5e0;
+            transition: all 0.3s;
+        }
+        .upload-area.dragover {
+            border-color: #805ad5;
+            background-color: #f7fafc;
+        }
+        .file-item {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8 max-w-3xl">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-2xl font-bold">上传字体文件</h1>
+                <a href="font.html" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">
+                    返回
+                </a>
+            </div>
+            
+            <!-- 上传说明 -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <h2 class="text-lg font-semibold text-blue-800 mb-2">上传要求</h2>
+                <ul class="text-sm text-blue-700 space-y-1">
+                    <li>• 支持 TTF / TTC 格式的字体文件</li>
+                    <li>• 单个文件大小不能超过 50MB</li>
+                    <li>• 支持拖拽上传或点击选择文件</li>
+                    <li>• 可以同时上传多个文件</li>
+                </ul>
+            </div>
+            
+            <!-- 上传区域 -->
+            <div id="uploadArea" class="upload-area rounded-lg p-8 text-center cursor-pointer mb-6">
+                <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <p class="text-lg text-gray-600 mb-2">拖拽文件到这里或点击选择</p>
+                <p class="text-sm text-gray-500">支持 TTF / TTC 格式，最大 50MB</p>
+                <input type="file" id="fileInput" accept=".ttf,.ttc" multiple class="hidden">
+            </div>
+            
+            <!-- 文件列表 -->
+            <div id="fileList" class="space-y-3"></div>
+            
+            <!-- 上传按钮 -->
+            <div class="mt-6 flex justify-between items-center">
+                <button onclick="clearAll()" class="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 transition">
+                    清空列表
+                </button>
+                <button onclick="uploadAll()" id="uploadBtn" class="bg-purple-500 text-white px-6 py-2 rounded hover:bg-purple-600 transition" disabled>
+                    开始上传
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedFiles = [];
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const uploadBtn = document.getElementById('uploadBtn');
+
+        // 点击上传区域
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // 选择文件
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        // 拖拽上传
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        // 处理文件
+        function handleFiles(files) {
+            for (let file of files) {
+                // 验证文件类型
+                const fileName = file.name.toLowerCase();
+                if (!fileName.endsWith('.ttf') && !fileName.endsWith('.ttc')) {
+                    alert(`文件 ${file.name} 不是 TTF/TTC 格式`);
+                    continue;
+                }
+
+                // 验证文件大小 (50MB = 50 * 1024 * 1024 bytes)
+                if (file.size > 50 * 1024 * 1024) {
+                    alert(`文件 ${file.name} 超过 50MB 限制`);
+                    continue;
+                }
+
+                // 检查是否已添加
+                if (selectedFiles.find(f => f.name === file.name)) {
+                    alert(`文件 ${file.name} 已在列表中`);
+                    continue;
+                }
+
+                selectedFiles.push(file);
+                addFileToList(file);
+            }
+
+            updateUploadButton();
+        }
+
+        // 添加文件到列表
+        function addFileToList(file) {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item bg-gray-50 border border-gray-200 rounded-lg p-4';
+            fileItem.dataset.filename = file.name;
+
+            const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+
+            fileItem.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <div class="flex items-center">
+                            <svg class="h-8 w-8 text-purple-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                            </svg>
+                            <div>
+                                <p class="font-medium text-gray-800">${file.name}</p>
+                                <p class="text-sm text-gray-500">${sizeInMB} MB</p>
+                            </div>
+                        </div>
+                        <div class="mt-2 bg-gray-200 rounded-full h-2 hidden progress-container">
+                            <div class="progress-bar bg-purple-500 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                        <p class="status-text text-sm mt-1"></p>
+                    </div>
+                    <button onclick="removeFile('${file.name}')" class="ml-4 text-red-500 hover:text-red-700 remove-btn">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            `;
+
+            fileList.appendChild(fileItem);
+        }
+
+        // 移除文件
+        function removeFile(filename) {
+            selectedFiles = selectedFiles.filter(f => f.name !== filename);
+            const fileItem = document.querySelector(`[data-filename="${filename}"]`);
+            if (fileItem) {
+                fileItem.remove();
+            }
+            updateUploadButton();
+        }
+
+        // 清空所有文件
+        function clearAll() {
+            if (selectedFiles.length === 0) return;
+            
+            if (confirm('确定要清空所有文件吗？')) {
+                selectedFiles = [];
+                fileList.innerHTML = '';
+                updateUploadButton();
+            }
+        }
+
+        // 更新上传按钮状态
+        function updateUploadButton() {
+            uploadBtn.disabled = selectedFiles.length === 0;
+        }
+
+        // 上传所有文件
+        async function uploadAll() {
+            if (selectedFiles.length === 0) return;
+
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = '上传中...';
+
+            for (let file of selectedFiles) {
+                await uploadFile(file);
+            }
+
+            uploadBtn.textContent = '上传完成';
+            setTimeout(() => {
+                uploadBtn.textContent = '开始上传';
+                updateUploadButton();
+            }, 2000);
+        }
+
+        // 上传单个文件
+        async function uploadFile(file) {
+            const fileItem = document.querySelector(`[data-filename="${file.name}"]`);
+            const progressContainer = fileItem.querySelector('.progress-container');
+            const progressBar = fileItem.querySelector('.progress-bar');
+            const statusText = fileItem.querySelector('.status-text');
+            const removeBtn = fileItem.querySelector('.remove-btn');
+
+            progressContainer.classList.remove('hidden');
+            removeBtn.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('font', file);
+
+            try {
+                const xhr = new XMLHttpRequest();
+
+                // 监听上传进度
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        const percentComplete = (e.loaded / e.total) * 100;
+                        progressBar.style.width = percentComplete + '%';
+                    }
+                });
+
+                // 上传完成
+                xhr.addEventListener('load', () => {
+                    if (xhr.status === 200) {
+                        const result = JSON.parse(xhr.responseText);
+                        if (result.code === 1) {
+                            progressBar.style.width = '100%';
+                            statusText.textContent = '✓ 上传成功';
+                            statusText.className = 'status-text text-sm mt-1 text-green-600';
+                            
+                            // 3秒后移除该项
+                            setTimeout(() => {
+                                removeFile(file.name);
+                            }, 3000);
+                        } else {
+                            statusText.textContent = '✗ ' + result.msg;
+                            statusText.className = 'status-text text-sm mt-1 text-red-600';
+                            removeBtn.style.display = 'block';
+                        }
+                    } else {
+                        statusText.textContent = '✗ 上传失败';
+                        statusText.className = 'status-text text-sm mt-1 text-red-600';
+                        removeBtn.style.display = 'block';
+                    }
+                });
+
+                // 上传错误
+                xhr.addEventListener('error', () => {
+                    statusText.textContent = '✗ 网络错误';
+                    statusText.className = 'status-text text-sm mt-1 text-red-600';
+                    removeBtn.style.display = 'block';
+                });
+
+                xhr.open('POST', './index.php?ac=upload');
+                xhr.send(formData);
+
+            } catch (error) {
+                console.error('上传失败:', error);
+                statusText.textContent = '✗ 上传失败';
+                statusText.className = 'status-text text-sm mt-1 text-red-600';
+                removeBtn.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
+
